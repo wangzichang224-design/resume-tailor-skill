@@ -1,0 +1,34 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ResumeDraft",
+  "description": "Metadata for a generated resume draft",
+  "type": "object",
+  "required": ["generated_at", "jd_source", "selected_experience_ids"],
+  "properties": {
+    "generated_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 timestamp of generation"
+    },
+    "jd_source": {
+      "type": "string",
+      "enum": ["screenshot", "text_file", "manual_paste"],
+      "description": "How the JD was obtained"
+    },
+    "selected_experience_ids": {
+      "type": "array",
+      "items": {"type": "string"},
+      "description": "IDs of experiences included in this draft"
+    },
+    "user_modified": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether the user has manually edited this draft"
+    },
+    "last_modified_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the user last modified the draft"
+    }
+  }
+}

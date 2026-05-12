@@ -1,0 +1,94 @@
+[
+  {
+    "id": "exp_sample_pm_1",
+    "category": "project",
+    "title": "AI 智能客服平台",
+    "subtitle": "产品负责人",
+    "date_start": "2025-01",
+    "date_end": "2025-06",
+    "location": "上海",
+    "tags": ["AI产品经理", "LLM", "RAG", "产品架构", "用户研究", "数据分析"],
+    "star_details": {
+      "situation": "某电商平台客服人工成本高，平均响应时间长，用户体验不佳",
+      "task": "设计并落地一个基于 LLM 的智能客服平台，覆盖售前咨询、订单查询、售后处理三大场景",
+      "action": "完成竞品分析和用户调研，输出 PRD 并主导产品架构设计；与算法团队协作搭建 RAG 知识库，设计人工兜底策略；建立以解决率、满意度为核心的指标体系",
+      "result": "智能客服解决率 85%，人工成本降低 40%，NPS 提升 12 个百分点"
+    },
+    "metrics": [
+      {"metric": "解决率", "value": "85%", "verified": true},
+      {"metric": "人工成本降低", "value": "40%", "verified": true},
+      {"metric": "NPS 提升", "value": "12pp", "verified": false}
+    ],
+    "evidence_level": "verified",
+    "needs_verification": false,
+    "target_roles": ["AI产品经理", "产品经理"],
+    "highlights": [
+      "从 0 到 1 完成 AI 产品落地，覆盖完整产品生命周期",
+      "跨部门协作经验：算法、工程、运营多方协调"
+    ]
+  },
+  {
+    "id": "exp_sample_pm_2",
+    "category": "project",
+    "title": "数据驱动增长项目",
+    "subtitle": "产品经理",
+    "date_start": "2024-08",
+    "date_end": "2024-12",
+    "location": "上海",
+    "tags": ["数据产品", "用户增长", "A/B测试", "指标体系", "产品迭代"],
+    "star_details": {
+      "situation": "产品 DAU 增长放缓，转化率低于行业基准，缺乏数据驱动的决策机制",
+      "task": "搭建用户增长数据体系，通过 A/B 测试和用户分群策略提升核心转化指标",
+      "action": "设计用户行为埋点体系和核心看板，建立 A/B 测试评估流程；通过用户分群制定差异化的促活和转化策略；与工程团队协作完成数据采集链路改造",
+      "result": "DAU 提升 25%，注册转化率提升 18%，搭建的指标体系成为团队日常决策依据"
+    },
+    "metrics": [
+      {"metric": "DAU 提升", "value": "25%", "verified": true},
+      {"metric": "转化率提升", "value": "18%", "verified": true}
+    ],
+    "evidence_level": "verified",
+    "needs_verification": false,
+    "target_roles": ["AI产品经理", "数据分析", "产品经理"],
+    "highlights": [
+      "数据驱动产品决策的完整落地案例",
+      "从埋点设计到策略验证的全链路经验"
+    ]
+  },
+  {
+    "id": "exp_sample_edu_1",
+    "category": "education",
+    "title": "示例大学",
+    "subtitle": "计算机科学与技术 硕士",
+    "date_start": "2024-09",
+    "date_end": "2026-06",
+    "location": "上海",
+    "tags": ["机器学习", "自然语言处理", "数据挖掘", "Python"],
+    "star_details": {
+      "result": "GPA 3.8/4.0 · 研究方向：大语言模型应用 · 相关课程：机器学习、NLP、数据挖掘"
+    },
+    "evidence_level": "verified",
+    "needs_verification": false,
+    "target_roles": ["*"],
+    "highlights": []
+  },
+  {
+    "id": "exp_sample_intern_1",
+    "category": "internship",
+    "title": "示例科技有限公司",
+    "subtitle": "AI 产品实习生",
+    "date_start": "2025-06",
+    "date_end": "2025-09",
+    "location": "上海",
+    "tags": ["AI产品经理", "需求分析", "竞品分析", "PRD", "数据分析"],
+    "star_details": {
+      "situation": "团队正在开发一款 AI 内容生成产品，需要快速验证市场需求并输出产品方案",
+      "task": "负责竞品分析和核心功能的需求文档编写",
+      "action": "完成 10+ 竞品的深度分析，输出功能对比矩阵和差异化策略；撰写 3 份核心功能 PRD，推动设计评审和技术方案对齐",
+      "result": "产品方案获团队认可并进入开发，核心功能按期上线"
+    },
+    "evidence_level": "plausible",
+    "needs_verification": false,
+    "target_roles": ["AI产品经理", "AI产品实习生"],
+    "highlights": []
+  }
+]

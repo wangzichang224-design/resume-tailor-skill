@@ -1,0 +1,62 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Experience",
+  "description": "一条结构化经历，用于 JD 召回和简历生成",
+  "type": "object",
+  "required": ["id", "category", "title", "star_details", "target_roles"],
+  "properties": {
+    "id": {"type": "string", "description": "唯一标识，如 exp_auditscribe"},
+    "category": {"type": "string", "enum": ["education", "project", "internship", "work", "certification", "skill"]},
+    "title": {"type": "string", "description": "经历标题"},
+    "subtitle": {"type": "string", "description": "副标题/公司/学校"},
+    "date_start": {"type": "string", "pattern": "^\\d{4}-\\d{2}$"},
+    "date_end": {"type": "string", "pattern": "^\\d{4}-\\d{2}$"},
+    "location": {"type": "string"},
+    "tags": {
+      "type": "array",
+      "items": {"type": "string"},
+      "description": "标签，用于匹配 JD 关键词"
+    },
+    "star_details": {
+      "type": "object",
+      "required": ["situation", "task", "action", "result"],
+      "properties": {
+        "situation": {"type": "string"},
+        "task": {"type": "string"},
+        "action": {"type": "string"},
+        "result": {"type": "string"}
+      }
+    },
+    "metrics": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "metric": {"type": "string"},
+          "value": {"type": "string"},
+          "verified": {"type": "boolean", "default": false}
+        }
+      }
+    },
+    "evidence_level": {
+      "type": "string",
+      "enum": ["verified", "plausible", "anecdotal"],
+      "description": "信息可信度"
+    },
+    "needs_verification": {
+      "type": "boolean",
+      "default": false,
+      "description": "标记为未核实信息，生成器不得写入简历"
+    },
+    "target_roles": {
+      "type": "array",
+      "items": {"type": "string"},
+      "description": "适合投递的岗位方向"
+    },
+    "highlights": {
+      "type": "array",
+      "items": {"type": "string"},
+      "description": "可能的 bullet 写法，供 writer 参考"
+    }
+  }
+}

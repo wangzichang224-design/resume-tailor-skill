@@ -1,0 +1,46 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "JDAnalysis",
+  "description": "JD 破译器输出结构",
+  "type": "object",
+  "required": ["job_title", "hard_requirements", "soft_skills", "keywords", "pain_points", "weights"],
+  "properties": {
+    "job_title": {"type": "string"},
+    "company": {"type": "string"},
+    "hard_requirements": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "requirement": {"type": "string"},
+          "must_have": {"type": "boolean"}
+        }
+      }
+    },
+    "soft_skills": {
+      "type": "array",
+      "items": {"type": "string"}
+    },
+    "keywords": {
+      "type": "array",
+      "items": {"type": "string"},
+      "description": "简历中应该出现的关键词"
+    },
+    "pain_points": {
+      "type": "array",
+      "items": {"type": "string"},
+      "description": "该岗位的核心痛点，简历应针对性回应"
+    },
+    "weights": {
+      "type": "object",
+      "description": "召回权重配置，可覆盖默认值",
+      "properties": {
+        "tag_match": {"type": "number"},
+        "hard_requirement": {"type": "number"},
+        "industry_relevance": {"type": "number"},
+        "evidence_quality": {"type": "number"},
+        "recency": {"type": "number"}
+      }
+    }
+  }
+}

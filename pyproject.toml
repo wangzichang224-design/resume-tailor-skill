@@ -1,0 +1,15 @@
+[project]
+name = "resume-tailor"
+version = "0.1.0"
+description = "Tailor your resume to match any job description — JD parsing, experience retrieval, Markdown generation, PDF export"
+requires-python = ">=3.10"
+dependencies = []
+
+[project.scripts]
+resume-tailor = "resume_tailor.pipeline:main"
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "pytest-cov>=5.0",
+]
