@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import os
 import sys
 from pathlib import Path
 from typing import Optional
@@ -14,31 +15,49 @@ from .md_generator import generate_markdown
 from .run_manager import RunManager
 
 
-def _load_deepseek_key() -> str | None:
-    """Load DeepSeek API key from .env or environment."""
+def _load_llm_config() -> tuple[str | None, str | None]:
+    """Load LLM API config from .env for refinement.
+
+    Returns (api_key, base_url).
+    Supports: VISION_API_KEY (shared) + QWEN_API_BASE or env vars.
+    """
     candidates = [
         Path(__file__).resolve().parent.parent.parent / ".env",
         Path.home() / ".env",
     ]
+    key = None
+    base_url = None
     for env_path in candidates:
         if env_path.exists():
             for line in env_path.read_text(encoding="utf-8").splitlines():
                 line = line.strip()
                 if line.startswith("VISION_API_KEY="):
-                    return line.split("=", 1)[1].strip().strip("\"'")
-    return None
+                    key = line.split("=", 1)[1].strip().strip("\"'")
+                elif line.startswith("QWEN_API_BASE="):
+                    base_url = line.split("=", 1)[1].strip().strip("\"'")
+    if key is None:
+        key = os.environ.get("VISION_API_KEY")
+    if base_url is None:
+        base_url = os.environ.get("QWEN_API_BASE")
+    return key, base_url
 
 
-def llm_refine_md(md_text: str, jd_text: str, api_key: str | None = None) -> str:
-    """Use DeepSeek to polish resume bullet points for the target JD.
+def llm_refine_md(md_text: str, jd_text: str, api_key: str | None = None, base_url: str | None = None) -> str:
+    """Use LLM to polish resume bullet points for the target JD.
 
+    Supports any OpenAI-compatible API (DeepSeek, Qwen, etc.).
     Falls back to original text if API unavailable.
     """
-    key = api_key or _load_deepseek_key()
-    if not key:
-        return md_text
-
     import httpx
+
+    loaded_key, loaded_base = _load_llm_config()
+    key = api_key or loaded_key
+    endpoint = (base_url or loaded_base or "https://api.deepseek.com").rstrip("/")
+    url = f"{endpoint}/chat/completions"
+
+    if not key:
+        print("[resume-tailor] No VISION_API_KEY found; skipping refinement.", file=sys.stderr)
+        return md_text
 
     prompt = (
         "You are a professional resume writer. Polish the following resume "
@@ -54,17 +73,17 @@ def llm_refine_md(md_text: str, jd_text: str, api_key: str | None = None) -> str
 
     try:
         response = httpx.post(
-            "https://api.deepseek.com/v1/chat/completions",
+            url,
             headers={
                 "Authorization": f"Bearer {key}",
                 "Content-Type": "application/json",
             },
             json={
-                "model": "deepseek-chat",
+                "model": "qwen-plus",
                 "messages": [{"role": "user", "content": prompt}],
                 "stream": False,
             },
-            timeout=60,
+            timeout=90,
         )
         response.raise_for_status()
         data = response.json()

@@ -10,29 +10,38 @@ import os
 from pathlib import Path
 
 
-def _load_env() -> tuple[str | None, str | None]:
-    """Load vision API config from .env files (project root, then user home)."""
-    # Try project .env first
+def _load_env() -> tuple[str | None, str | None, str | None]:
+    """Load vision API config from .env files (project root, then user home).
+
+    Returns (api_key, provider, base_url).
+    """
     candidates = [
         Path(__file__).resolve().parent.parent.parent / ".env",
         Path.home() / ".env",
     ]
     for env_path in candidates:
         if env_path.exists():
-            for line in env_path.read_text(encoding="utf-8").splitlines():
+            lines = env_path.read_text(encoding="utf-8").splitlines()
+            key = None
+            provider = None
+            base_url = None
+            for line in lines:
                 line = line.strip()
                 if line.startswith("VISION_API_KEY="):
                     key = line.split("=", 1)[1].strip().strip("\"'")
-                    provider = None
-                    # Also grab provider if on same line or subsequent lines
-                    for l2 in env_path.read_text(encoding="utf-8").splitlines():
-                        l2 = l2.strip()
-                        if l2.startswith("VISION_API_PROVIDER="):
-                            provider = l2.split("=", 1)[1].strip().strip("\"'")
-                    return key, provider
+                elif line.startswith("VISION_API_PROVIDER="):
+                    provider = line.split("=", 1)[1].strip().strip("\"'")
+                elif line.startswith("DEEPSEEK_API_BASE=") or line.startswith("QWEN_API_BASE="):
+                    base_url = line.split("=", 1)[1].strip().strip("\"'")
+            if key:
+                return key, provider, base_url
 
     # Fall back to environment variables
-    return os.environ.get("VISION_API_KEY"), os.environ.get("VISION_API_PROVIDER")
+    return (
+        os.environ.get("VISION_API_KEY"),
+        os.environ.get("VISION_API_PROVIDER"),
+        os.environ.get("DEEPSEEK_API_BASE"),
+    )
 
 
 def parse_jd_image(image_path: str) -> str:
@@ -48,7 +57,7 @@ def parse_jd_image(image_path: str) -> str:
     RuntimeError
         If no vision API key is configured or parsing fails.
     """
-    api_key, provider = _load_env()
+    api_key, provider, base_url = _load_env()
 
     if not api_key:
         raise RuntimeError(
@@ -59,9 +68,12 @@ def parse_jd_image(image_path: str) -> str:
             "Without a configured API key, paste the JD text manually instead."
         )
 
-    provider = (provider or "anthropic").lower().strip()
+    provider = (provider or "openai").lower().strip()
 
-    if provider == "anthropic":
+    # DeepSeek uses OpenAI-compatible API
+    if provider == "deepseek" or (provider == "openai" and base_url and "deepseek" in base_url):
+        return _parse_with_openai(image_path, api_key, base_url or "https://api.deepseek.com")
+    elif provider == "anthropic":
         return _parse_with_anthropic(image_path, api_key)
     elif provider == "openai":
         return _parse_with_openai(image_path, api_key)
@@ -132,10 +144,16 @@ def _parse_with_anthropic(image_path: str, api_key: str) -> str:
     return text_content.strip()
 
 
-def _parse_with_openai(image_path: str, api_key: str) -> str:
-    """Parse JD image using OpenAI GPT-4o vision API."""
+def _parse_with_openai(image_path: str, api_key: str, base_url: str | None = None) -> str:
+    """Parse JD image using an OpenAI-compatible vision API.
+
+    Supports OpenAI GPT-4o, DeepSeek, and any OpenAI-compatible endpoint.
+    """
     import httpx
     import base64
+
+    endpoint = (base_url or "https://api.openai.com").rstrip("/")
+    url = f"{endpoint}/v1/chat/completions"
 
     with open(image_path, "rb") as f:
         image_data = base64.b64encode(f.read()).decode("utf-8")
@@ -150,36 +168,43 @@ def _parse_with_openai(image_path: str, api_key: str) -> str:
 
     data_uri = f"data:{media_type};base64,{image_data}"
 
+    payload = {
+        "model": "deepseek-chat",
+        "messages": [
+            {
+                "role": "user",
+                "content": [
+                    {
+                        "type": "text",
+                        "text": (
+                            "You are a precise OCR tool. "
+                            "Extract ALL text from this job description screenshot "
+                            "in its original language. Preserve formatting, section headers, "
+                            "bullet points, and numbers as much as possible. "
+                            "Output ONLY the extracted text, no commentary."
+                        ),
+                    },
+                    {
+                        "type": "image_url",
+                        "image_url": {"url": data_uri, "detail": "high"},
+                    },
+                ],
+            }
+        ],
+    }
+
+    # DeepSeek doesn't support stream mode for vision
+    if "deepseek" in endpoint:
+        payload["stream"] = False
+
     response = httpx.post(
-        "https://api.openai.com/v1/chat/completions",
+        url,
         headers={
             "Authorization": f"Bearer {api_key}",
             "Content-Type": "application/json",
         },
-        json={
-            "model": "gpt-4o",
-            "messages": [
-                {
-                    "role": "user",
-                    "content": [
-                        {
-                            "type": "text",
-                            "text": (
-                                "You are a precise OCR tool. "
-                                "Extract ALL text from this job description screenshot "
-                                "in its original language. Preserve formatting, section headers, "
-                                "bullet points, and numbers as much as possible. "
-                                "Output ONLY the extracted text, no commentary."
-                            ),
-                        },
-                        {
-                            "type": "image_url",
-                            "image_url": {"url": data_uri, "detail": "high"},
-                        },
-                    ],
-                }
-            ],
-        },
+        json=payload,
+        timeout=60,
     )
     response.raise_for_status()
     data = response.json()
