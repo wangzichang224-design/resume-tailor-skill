@@ -1,0 +1,100 @@
+/* ============================================================
+   Academic/Research Resume — single-column, publication-ready
+   ============================================================ */
+
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Times New Roman", "Noto Serif SC", serif;
+  font-size: 11pt;
+  line-height: 1.4;
+  color: #000;
+  max-width: 210mm;
+  margin: 0 auto;
+  padding: 15mm 20mm;
+  background: #fff;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 10pt;
+}
+
+.header h1 {
+  font-size: 16pt;
+  font-weight: 700;
+  margin-bottom: 2pt;
+}
+
+.header .contact {
+  font-size: 9.5pt;
+  color: #444;
+}
+
+.section {
+  margin: 7pt 0;
+}
+
+.section-title {
+  font-size: 11pt;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1pt;
+  border-bottom: 1px solid #000;
+  padding-bottom: 1pt;
+  margin-bottom: 4pt;
+}
+
+.entry {
+  margin: 3pt 0 2pt 0;
+  page-break-inside: avoid;
+}
+
+.entry-header {
+  font-size: 11pt;
+  font-weight: 700;
+  margin-bottom: 1pt;
+}
+
+.entry-header .date {
+  float: right;
+  font-weight: 400;
+  font-size: 10pt;
+}
+
+.entry ul {
+  list-style: none;
+  padding-left: 12pt;
+  margin: 0;
+}
+
+.entry li {
+  padding-left: 8pt;
+  margin-bottom: 1.5pt;
+  font-size: 10.5pt;
+  text-align: justify;
+}
+
+.entry li::before {
+  content: "•";
+  position: absolute;
+  left: 0;
+}
+
+.publication {
+  margin: 2pt 0;
+  padding-left: 12pt;
+  font-size: 10pt;
+}
+
+.publication .authors { font-style: italic; }
+.publication .title { font-weight: 600; }
+
+@media print {
+  body { padding: 0; }
+  @page { margin: 15mm 20mm; }
+}

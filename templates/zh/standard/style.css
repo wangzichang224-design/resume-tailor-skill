@@ -1,0 +1,138 @@
+/* ============================================================
+   中文标准简历模板 — 简洁商务风格
+   ============================================================ */
+
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Noto Sans SC", "PingFang SC", "Microsoft YaHei", "Helvetica Neue", Arial, sans-serif;
+  font-size: 10pt;
+  line-height: 1.5;
+  color: #2c3e50;
+  max-width: 210mm;
+  margin: 0 auto;
+  padding: 15mm 18mm;
+  background: #fff;
+}
+
+/* ── Header area ── */
+.header {
+  text-align: center;
+  margin-bottom: 10pt;
+  padding-bottom: 8pt;
+  border-bottom: 2px solid #1a3a5c;
+}
+
+.header h1 {
+  font-size: 20pt;
+  font-weight: 700;
+  color: #1a3a5c;
+  letter-spacing: 3pt;
+  margin-bottom: 3pt;
+}
+
+.header .title {
+  font-size: 11pt;
+  color: #4a6a8a;
+  margin-bottom: 4pt;
+}
+
+.header .contact {
+  font-size: 9pt;
+  color: #7a8a9a;
+}
+
+.header .contact span {
+  margin: 0 4pt;
+}
+
+.header .contact .sep {
+  color: #ccc;
+}
+
+/* ── Section ── */
+.section {
+  margin: 8pt 0;
+}
+
+.section-title {
+  font-size: 11pt;
+  font-weight: 700;
+  color: #1a3a5c;
+  margin-bottom: 4pt;
+  padding-left: 6pt;
+  border-left: 3px solid #1a3a5c;
+}
+
+/* ── Entry ── */
+.entry {
+  margin: 4pt 0 3pt 0;
+  page-break-inside: avoid;
+}
+
+.entry-header {
+  font-size: 10pt;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin-bottom: 1pt;
+}
+
+.entry-header .date {
+  float: right;
+  font-weight: 400;
+  color: #7a8a9a;
+  font-size: 9pt;
+}
+
+.entry-header .subtitle {
+  font-weight: 400;
+  color: #4a6a8a;
+}
+
+/* ── Bullets ── */
+.entry ul {
+  list-style: none;
+  padding-left: 12pt;
+  margin: 0;
+}
+
+.entry li {
+  position: relative;
+  padding-left: 10pt;
+  margin-bottom: 1.5pt;
+  font-size: 9.5pt;
+  color: #3a4a5a;
+  text-align: justify;
+}
+
+.entry li::before {
+  content: "●";
+  position: absolute;
+  left: 0;
+  color: #1a3a5c;
+  font-size: 6pt;
+  top: 3pt;
+}
+
+/* ── Skill entries ── */
+.skill-line {
+  font-size: 9.5pt;
+  color: #3a4a5a;
+  margin: 2pt 0;
+  padding-left: 6pt;
+}
+
+.skill-line .category {
+  font-weight: 600;
+  color: #1a3a5c;
+}
+
+/* ── Print ── */
+@media print {
+  body { padding: 0; }
+  @page { margin: 15mm 18mm; }
+}

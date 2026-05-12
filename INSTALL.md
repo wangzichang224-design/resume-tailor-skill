@@ -2,151 +2,145 @@
 
 This guide is the source of truth for installing and validating the `resume-tailor` skill from scratch.
 
+**v2.0:** This skill now uses a **4-skill architecture**. Install all 4 skills for full functionality.
+
 Repository: `https://github.com/wangzichang224-design/resume-tailor-skill`
 
-Raw files:
-- `https://raw.githubusercontent.com/wangzichang224-design/resume-tailor-skill/main/SKILL.md`
-- `https://raw.githubusercontent.com/wangzichang224-design/resume-tailor-skill/main/INSTALL.md`
-- `https://raw.githubusercontent.com/wangzichang224-design/resume-tailor-skill/main/README.md`
-- `https://raw.githubusercontent.com/wangzichang224-design/resume-tailor-skill/main/LICENSE`
+---
 
-State model:
-- `python status`: `pip-installed` | `unavailable`
-- `pdf status`: `chrome-ready` | `pandoc-only` | `unavailable`
-- `vision key`: `configured` | `missing` (non-blocking; falls back to manual paste)
-- `install result`: `strictly validated` | `path-validated` | `incomplete`
+## Mode A: Claude Code (4-skill pipeline, recommended)
 
-Important naming rule:
-- the repository name is `resume-tailor-skill`
-- the installed local skill folder must be `resume-tailor`
-- do not install into a folder named `resume-tailor-skill`
+No Python needed. Claude does everything natively.
 
-## For Humans
-
-Copy and paste this prompt to your LLM agent:
-
-```text
-Install and validate the `resume-tailor` skill by following this guide exactly:
-https://raw.githubusercontent.com/wangzichang224-design/resume-tailor-skill/main/INSTALL.md
-```
-
-## For LLM Agents
-
-Follow this order exactly.
-
-### 1. Detect the host agent family
-
-Use one of:
-- `Claude Code` if the environment refers to `~/.claude/skills/`
-- `OpenCode` if the environment refers to `~/.config/opencode/skills/`
-- `.agents/skills style setup` if the environment uses `.agents/skills/`
-
-### 2. Resolve the skills directory
-
-- `Claude Code` → `~/.claude/skills/`
-- `OpenCode` → `~/.config/opencode/skills/`
-- `.agents/skills` → `~/.agents/skills/`
-
-### 3. Create `<skills-dir>/resume-tailor/`
-
-### 4. Install skill files from raw URLs
-
-Download these files into `<skills-dir>/resume-tailor/`:
-- `SKILL.md`
-- `README.md`
-- `LICENSE`
-
-### 5. Verify SKILL.md exists
-
-Confirm `<skills-dir>/resume-tailor/SKILL.md` exists.
-
-If the host caches skills per session, restart/reload now.
-
-### 6. Install the Python package
+### Installation Steps
 
 ```bash
-# Clone or copy the repository
+# 1. Create skill directories
+mkdir -p ~/.claude/skills/resume-tailor \
+         ~/.claude/skills/resume-jd-intake \
+         ~/.claude/skills/resume-drafting \
+         ~/.claude/skills/resume-review
+
+# 2. Copy skill files (from repository root)
+cp skills/resume-tailor/SKILL.md     ~/.claude/skills/resume-tailor/
+cp skills/resume-jd-intake/SKILL.md  ~/.claude/skills/resume-jd-intake/
+cp skills/resume-drafting/SKILL.md   ~/.claude/skills/resume-drafting/
+cp skills/resume-review/SKILL.md     ~/.claude/skills/resume-review/
+
+# 3. Copy templates and assets to resume-review (template resolution path)
+cp -r assets ~/.claude/skills/resume-review/
+cp -r templates ~/.claude/skills/resume-review/
+```
+
+### Set Up Experience Database
+
+Create `data/my_experiences.local.json` in the project root. See `schemas/experience.schema.json` for the schema, or the README for an example.
+
+### Set Up Template Path
+
+The templates and CSS assets must be available at one of these locations:
+1. `~/.claude/skills/resume-review/assets/resume-template/` — copied in step 3 above
+2. `~/.claude/skills/resume-review/templates/` — copied in step 3 above
+
+### PDF Export (Optional)
+
+For automatic PDF generation:
+```bash
+pip install weasyprint
+```
+Without weasyprint, the skill saves an HTML file you can print to PDF in your browser.
+
+### Verify Installation
+
+Check that these files exist:
+```bash
+ls ~/.claude/skills/resume-tailor/SKILL.md
+ls ~/.claude/skills/resume-jd-intake/SKILL.md
+ls ~/.claude/skills/resume-drafting/SKILL.md
+ls ~/.claude/skills/resume-review/SKILL.md
+ls ~/.claude/skills/resume-review/assets/resume-template/style.css
+ls ~/.claude/skills/resume-review/templates/zh/standard/style.css  # optional templates
+```
+
+---
+
+## Mode B: Python Pipeline (for OpenClaw / 微信机器人 / shell-capable)
+
+For platforms that can execute Python scripts. Uses the same 4-skill orchestration.
+
+### Prerequisites
+
+- Python >= 3.10
+- pip
+
+### Installation
+
+```bash
+# Clone the repository
 git clone https://github.com/wangzichang224-design/resume-tailor-skill.git
 cd resume-tailor-skill
 
-# Install the Python package
-pip install -e .
+# Install Python dependencies
+pip install httpx weasyprint
 
-# Or for development: pip install -e ".[dev]"
+# Install the 4 skill files into the skills directory
+mkdir -p ~/.claude/skills/resume-tailor \
+         ~/.claude/skills/resume-jd-intake \
+         ~/.claude/skills/resume-drafting \
+         ~/.claude/skills/resume-review
+
+cp skills/resume-tailor/SKILL.md     ~/.claude/skills/resume-tailor/
+cp skills/resume-jd-intake/SKILL.md  ~/.claude/skills/resume-jd-intake/
+cp skills/resume-drafting/SKILL.md   ~/.claude/skills/resume-drafting/
+cp skills/resume-review/SKILL.md     ~/.claude/skills/resume-review/
+
+cp -r assets ~/.claude/skills/resume-review/
+cp -r templates ~/.claude/skills/resume-review/
 ```
 
-### 7. Set up the private experience database
+### Set Up Experience Database
 
 ```bash
-# Create the data directory
 mkdir -p data
-
-# Copy your existing experience database
-# (expected format: array of experience objects per schemas/experience.schema.json)
-# Save as data/my_experiences.local.json (auto-detected, gitignored)
+# Place your experience data at data/my_experiences.local.json
 ```
 
-### 8. Configure vision API (optional)
+**Format:** Array of experience objects per `schemas/experience.schema.json`
 
-Create or edit `.env` in the project root:
+### Set Up .env for Screenshot Parsing (Optional)
+
+Vision API is optional — you can paste JD text directly.
 
 ```
-VISION_API_KEY=sk-your-api-key
+VISION_API_KEY=sk-your-qwen-api-key
 VISION_API_PROVIDER=anthropic
+QWEN_API_BASE=https://dashscope.aliyuncs.com/compatible-mode/v1
 ```
 
-Supported providers: `anthropic` (Claude), `openai` (GPT-4o)
-
-If not configured, the skill will gracefully fall back to:
-- saving the screenshot to the run directory
-- asking the user to paste the JD text manually
-
-### 9. Check PDF build environment
-
-Test in this order:
-- `google-chrome --version` or `chromium --version` or `msedge --version`
-- `pandoc --version`
-
-Classify as:
-- `chrome-ready`: Chrome/Chromium/Edge + Pandoc both available
-- `pandoc-only`: Pandoc available, no browser
-- `unavailable`: neither available
-
-Missing Chrome/Pandoc means PDF export is blocked, but **Markdown output still works**. The minimum viable deliverable is the Markdown draft.
-
-### 10. Verify installation
-
-Run the smoke test:
+### Verify
 
 ```bash
-python -c "from resume_tailor import run_pipeline; print('OK: package imported')"
-
-python -m pytest tests/ -v  # if tests/ exists
+python3 -c "from resume_tailor import run_pipeline; print('OK: package imported')"
 ```
 
-### 11. Report the final result
+---
 
-Report:
-- detected agent family
-- resolved skills directory
-- installed skill path
-- whether the Python package is `pip-installed` or `unavailable`
-- whether PDF build is `chrome-ready`, `pandoc-only`, or `unavailable`
-- whether vision API key is `configured` or `missing`
-- whether the `install result` is `strictly validated`, `path-validated`, or `incomplete`
+## State Model
 
-## Validation Standard
+- `4-skill status`: `all-installed` | `partial` | `unavailable`
+  - `all-installed`: all 4 SKILL.md files + `assets/resume-template/style.css` in place
+- `python status`: `pip-installed` | `unavailable` (Mode B only)
+- `pdf status`: `weasyprint-ready` | `html-only`
+- `install result`: `strictly-validated` | `path-validated` | `incomplete`
 
-`strictly validated` requires ALL of:
-- `<skills-dir>/resume-tailor/SKILL.md` exists
-- Python package imports successfully
-- `data/my_experiences.local.json` exists (or `.json`)
+### Validation Standard
 
-`path-validated` requires:
-- skill files placed and import works
+`strictly-validated` requires ALL of:
+- 4 SKILL.md files installed in correct paths
+- `assets/resume-template/style.css` installed in resume-review skill directory
+- Python package importable (Mode B only)
+- Experience database exists at `data/my_experiences.local.json`
 
 `incomplete` if:
-- Python import fails
-- skill files not properly placed
-
-Missing Chrome/Pandoc or missing vision API key do NOT reduce the validation tier — these are runtime capabilities, not installation criteria.
+- Any of the 4 SKILL.md files missing
+- or assets or templates missing

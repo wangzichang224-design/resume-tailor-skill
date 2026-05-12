@@ -1,153 +1,172 @@
 # Resume Tailor Skill
 
+<div align="center">
+
+## 简历定制 Skill
+
+---
+
+把一张岗位截图（或一段 JD 文本）变成一份匹配该岗位的精美 PDF 简历。
+**隐私优先**：你的经历数据永远在本地。
+
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
-[![Claude Code](https://img.shields.io/badge/Claude%20Code-Skill-blueviolet)](https://claude.ai/code)
-[![AgentSkills](https://img.shields.io/badge/AgentSkills-Standard-green)](https://agentskills.io)
 
 [中文](#中文) | [English](#english)
 
 ---
 
+</div>
+
 ## 中文
 
-**Resume Tailor** 是一个专注于简历定制化的 AI agent skill。输入岗位 JD（文本或截图），自动解析需求、从你的经历库中召回最匹配的经历，生成一份可编辑的 Markdown 简历草稿，经你人工微调后一键导出 PDF。
+### 这是什么
 
-### 核心原则
+**Resume Tailor** 是一个 4-skill 简历定制流水线，专为 Claude Code / OpenClaw 设计。
 
-- **隐私优先**：你的经历库、手机号、邮箱、JD 截图全部本地私有，不上传任何第三方
-- **绝不编造**：每条经历和数字都可追溯到真实条目，`needs_verification` 标记的经历自动排除
-- **人工在环**：生成草稿后你必须人工审核修改，再导出 PDF
-- **截图降级**：未配置视觉 API 时自动降级为"请粘贴 JD 文本"
+### 工作流程
+
+```
+JD（截图/文本）
+  │
+  ├─ [resume-jd-intake]  读取 JD + 加载简历库 → 确认不确定的信息
+  │
+  ├─ [resume-drafting]    JD 分析 → 5 维评分 → 排序 → 写 Markdown 简历
+  │
+  └─ [resume-review]     Claim 追溯审核 → HTML 渲染 → PDF 导出
+```
+
+### v2.0 新特性
+
+- **4-skill 架构**：编排 / 采集 / 写作 / 审核，职责清晰
+- **Claim-Source-Map**：每个 bullet 都有来源追溯，杜绝幻觉
+- **信息确认机制**：不确定的信息先问你，不脑补填充
+- **多模板支持**：中文标准 / 英文 ATS / 学术简历，按需选择
+- **精致排版**：升级 CSS，A4 专业布局，可直接投递
 
 ### 安装
 
-复制以下指令给你的 LLM agent：
+#### Claude Code（推荐）
 
-```text
-Fetch and follow instructions from:
-https://raw.githubusercontent.com/wangzichang224-design/resume-tailor-skill/main/INSTALL.md
+```bash
+# 1. 创建 skills 目录
+mkdir -p ~/.claude/skills/resume-tailor \
+         ~/.claude/skills/resume-jd-intake \
+         ~/.claude/skills/resume-drafting \
+         ~/.claude/skills/resume-review
+
+# 2. 复制 skill 文件
+cp skills/resume-tailor/SKILL.md     ~/.claude/skills/resume-tailor/
+cp skills/resume-jd-intake/SKILL.md  ~/.claude/skills/resume-jd-intake/
+cp skills/resume-drafting/SKILL.md   ~/.claude/skills/resume-drafting/
+cp skills/resume-review/SKILL.md     ~/.claude/skills/resume-review/
+
+# 3. 复制模板和资源
+cp -r assets ~/.claude/skills/resume-review/
+cp -r templates ~/.claude/skills/resume-review/
+
+# 4. 准备简历库
+# 在项目目录 data/my_experiences.local.json 放置你的经历数据
 ```
 
-### 快速开始
+#### OpenClaw / 微信机器人
 
-1. 按 `INSTALL.md` 完成安装和环境检查
-2. 准备好你的经历库（`data/my_experiences.local.json`），参考 `schemas/experience.schema.json` 格式
-3. 提出需求，例如：
+参考 `INSTALL.md` 中的 Python pipeline 安装方式。
 
-```text
-根据这个JD截图帮我生成一份匹配的简历
+### 使用
+
+在 Claude Code 中：
+
+```
+帮我根据这个 JD 截图定制简历，用中文标准模板
 ```
 
 或者：
 
-```text
-tailor my resume for this job: [paste JD text]
+```
+tailor my resume for this job, use the English ATS template
 ```
 
-### 工作流
+### 简历库格式
 
+`data/my_experiences.local.json` 是一个 JSON 数组，每条经历的格式：
+
+```json
+{
+  "id": "exp_intern_fuji",
+  "category": "internship",
+  "title": "富士（中国）投资有限公司",
+  "subtitle": "活动运营",
+  "date_start": "2025-10",
+  "date_end": "2026-01",
+  "tags": ["数据运营", "AI产品", "活动运营"],
+  "star_details": {
+    "situation": "集团多业务线数据庞大，日常流程耗时较长",
+    "task": "需要提升效率",
+    "action": "搭建 AI 简历初筛模型，重构费用管理 SOP",
+    "result": "简历初筛效率提升50%，流程审批效率提升30%"
+  },
+  "evidence_level": "verified",
+  "needs_verification": false,
+  "target_roles": ["AI产品经理", "产品经理"],
+  "metrics": [
+    {"metric": "效率提升", "value": "50%", "verified": true}
+  ]
+}
 ```
-JD (截图/文本) → JD 解析 → 经历召回 → Markdown 简历草稿 → 人工编辑 → PDF 导出
-```
 
-### 隐私说明
+完整字段说明见 `schemas/experience.schema.json`。
 
-- 你的真实经历库保存在 `data/my_experiences.local.json`（已被 `.gitignore` 排除）
-- 仓库中提供的示例 `examples/sample_experiences.json` 使用虚构候选人
-- 视觉 API 调用仅发送 JD 截图，不发送你的经历库
-- 运行 `scripts/privacy_check.sh` 可在发布前扫描隐私泄漏
+### 模板
 
-### 依赖
-
-- **必需**：Python >= 3.10
-- **可选**：Pandoc + Chrome/Chromium/Edge（PDF 导出）
-- **可选**：Claude API / OpenAI API Key（JD 截图自动解析）
+| 模板 | 路径 | 适用场景 |
+|------|------|---------|
+| 通用 | `assets/resume-template/` | 默认，简洁单栏 |
+| 中文标准 | `templates/zh/standard/` | 中文求职，商务风格 |
+| 英文 ATS | `templates/industry/ats/` | 外企求职，ATS 友好 |
+| 学术简历 | `templates/research/ats/` | 学术/研究岗位 |
 
 ---
 
 ## English
 
-**Resume Tailor** is an AI agent skill for tailoring your resume to specific job descriptions. Feed it a JD (text or screenshot), and it automatically parses requirements, retrieves the best-matching experiences from your local database, and generates an editable Markdown draft. Fine-tune it manually, then export to PDF.
+### What is this
 
-### Key Principles
-
-- **Privacy first**: your experience database, phone, email, and JD screenshots stay local — nothing is uploaded
-- **No fabrication**: every bullet traces to a real experience entry; `needs_verification` entries are auto-excluded
-- **Human in the loop**: you review and edit the draft before PDF export
-- **Graceful fallback**: if no vision API key is configured, the skill asks you to paste the JD text manually
+**Resume Tailor** is a 4-skill pipeline that turns a job description (screenshot or text) into a polished PDF resume tailored to the JD.
 
 ### Installation
 
-Tell your LLM agent:
+```bash
+# Create skill directories
+mkdir -p ~/.claude/skills/resume-tailor \
+         ~/.claude/skills/resume-jd-intake \
+         ~/.claude/skills/resume-drafting \
+         ~/.claude/skills/resume-review
 
-```text
-Fetch and follow instructions from:
-https://raw.githubusercontent.com/wangzichang224-design/resume-tailor-skill/main/INSTALL.md
+# Copy skill files
+cp skills/resume-tailor/SKILL.md     ~/.claude/skills/resume-tailor/
+cp skills/resume-jd-intake/SKILL.md  ~/.claude/skills/resume-jd-intake/
+cp skills/resume-drafting/SKILL.md   ~/.claude/skills/resume-drafting/
+cp skills/resume-review/SKILL.md     ~/.claude/skills/resume-review/
+
+# Copy assets and templates
+cp -r assets ~/.claude/skills/resume-review/
+cp -r templates ~/.claude/skills/resume-review/
 ```
 
 ### Quick Start
 
-1. Complete installation via `INSTALL.md`
-2. Prepare your experience database at `data/my_experiences.local.json` (see `schemas/experience.schema.json`)
-3. Ask naturally:
+1. Prepare `data/my_experiences.local.json`
+2. In Claude Code: "tailor my resume for this job description"
 
-```text
-Tailor my resume for this job: [paste JD text]
-```
+### Templates
 
-Or:
+| Template | Path | Use Case |
+|----------|------|----------|
+| Generic | `assets/resume-template/` | Default, clean single-column |
+| Chinese | `templates/zh/standard/` | Chinese job applications |
+| English ATS | `templates/industry/ats/` | Foreign companies, ATS-friendly |
+| Academic | `templates/research/ats/` | Research/academic positions |
 
-```text
-Use this JD screenshot to create a matching resume
-```
-
-### Privacy
-
-- Real experience data lives in `data/my_experiences.local.json` (gitignored)
-- Example data uses a fictional candidate
-- Vision API calls send only the screenshot, never your experience database
-- Run `scripts/privacy_check.sh` to scan for accidental leaks
-
-### Dependencies
-
-- **Required**: Python >= 3.10
-- **Optional**: Pandoc + Chrome/Chromium/Edge (PDF export)
-- **Optional**: Claude API / OpenAI API Key (screenshot parsing)
-
-## Repository Structure
-
-```
-resume-tailor-skill/
-├── SKILL.md                    # Agent behavioral spec
-├── INSTALL.md                  # Installation guide
-├── README.md                   # This file
-├── LICENSE                     # MIT License
-├── .env.example                # Vision API key template
-├── pyproject.toml              # Python package config
-├── data/                       # Private data (gitignored *.local.*)
-├── schemas/                    # JSON schemas
-│   ├── experience.schema.json
-│   ├── jd_analysis.schema.json
-│   └── resume_draft.schema.json
-├── scripts/
-│   ├── resume_tailor/          # Python package
-│   │   ├── __init__.py
-│   │   ├── jd_parser.py        # Rule-based JD text parser
-│   │   ├── jd_image.py         # Vision API screenshot parser
-│   │   ├── retriever.py        # 5-dimension experience scoring
-│   │   ├── md_generator.py     # Markdown resume renderer
-│   │   ├── pipeline.py         # Orchestration + CLI
-│   │   └── run_manager.py      # Per-run directory management
-│   ├── build_pdf.sh            # Linux/macOS PDF builder
-│   ├── build_pdf.ps1           # Windows PDF builder
-│   └── privacy_check.sh        # Pre-publish privacy scanner
-├── examples/
-│   ├── sample_experiences.json # Fictional sample data
-│   └── sample_jd.txt           # Sample JD text
-└── tests/
-```
-
-## License
+### License
 
 MIT

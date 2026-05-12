@@ -1,117 +1,153 @@
-/* Professional Resume Styles — single-column, clean, fits one page */
+/* ============================================================
+   Professional Resume Styles — v2.0
+   Single-column, A4-optimized, print-ready
+   Inspired by quality LaTeX resume templates
+   ============================================================ */
 
 /* Reset & base */
-* { margin: 0; padding: 0; box-sizing: border-box; }
-
-body {
-  font-family: "Helvetica Neue", Arial, "Noto Sans SC", sans-serif;
-  font-size: 10pt;
-  line-height: 1.45;
-  color: #333;
-  max-width: 210mm;
-  margin: 0 auto;
-  padding: 20mm 15mm;
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-/* Name + title */
+body {
+  font-family: "Helvetica Neue", Arial, "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
+  font-size: 10.5pt;
+  line-height: 1.45;
+  color: #2d2d2d;
+  max-width: 210mm;
+  margin: 0 auto;
+  padding: 18mm 20mm 15mm 20mm;
+  background: #fff;
+}
+
+/* ── Name ── */
 h1 {
-  font-size: 20pt;
+  font-size: 22pt;
   font-weight: 700;
+  letter-spacing: 0.5pt;
+  color: #1a1a1a;
   margin-bottom: 2pt;
 }
 
+/* Title line (right after h1) */
 h1 + p {
   font-size: 11pt;
-  color: #666;
-  margin-bottom: 4pt;
+  color: #555;
+  margin-bottom: 3pt;
 }
 
-/* Contact line */
-body > p:first-of-type {
+/* ── Contact line ── */
+body > p:has(+ hr) {
   font-size: 9pt;
-  color: #888;
+  color: #777;
   margin-bottom: 6pt;
 }
 
-/* Separator */
+/* ── Separator ── */
 hr {
   border: none;
   border-top: 1.5px solid #333;
-  margin: 6pt 0 8pt 0;
+  margin: 5pt 0 7pt 0;
 }
 
-/* Section headers */
+/* ── Section headers ── */
 h2 {
-  font-size: 12pt;
+  font-size: 11.5pt;
   font-weight: 700;
+  color: #1a3a5c;
+  border-bottom: 1px solid #d0d8e0;
+  padding-bottom: 2pt;
+  margin: 9pt 0 3pt 0;
+  page-break-after: avoid;
   text-transform: uppercase;
   letter-spacing: 1pt;
-  border-bottom: 1px solid #ccc;
-  padding-bottom: 2pt;
-  margin: 10pt 0 4pt 0;
-  page-break-after: avoid;
 }
 
-/* Entry header: Title | Subtitle · Date */
-strong {
+/* ── Entry header: **Title | Subtitle** · Date ── */
+p:has(strong), p > strong {
+  font-size: 10.5pt;
   font-weight: 600;
+  color: #1a1a1a;
 }
 
-body > p > strong {
-  /* Skip — contact line */
+p:has(strong) {
+  margin: 4pt 0 1pt 0;
+  line-height: 1.4;
 }
 
-/* Each entry block */
-h2 + p, h2 + p + p, h2 + p + p + p {
-  /* Entry header lines */
-}
-
-/* Entry header style applied inline */
+/* Date portion within entry header (after ·) */
 p:has(strong) {
   font-size: 10pt;
-  margin: 4pt 0 1pt 0;
 }
 
-/* Bullet points */
+/* ── Bullet points ── */
 ul {
   list-style: none;
   padding-left: 0;
-  margin: 0 0 3pt 0;
+  margin: 0 0 2.5pt 0;
 }
 
 li {
   position: relative;
-  padding-left: 10pt;
-  margin-bottom: 1pt;
-  font-size: 9pt;
+  padding-left: 11pt;
+  margin-bottom: 1.2pt;
+  font-size: 9.5pt;
   line-height: 1.4;
-  color: #444;
+  color: #3a3a3a;
+  text-align: justify;
 }
 
 li::before {
   content: "•";
   position: absolute;
   left: 0;
-  color: #333;
+  color: #1a3a5c;
+  font-weight: 700;
 }
 
-/* Skill line (no bullets) */
-p:has(+ hr) {
-  /* Last section before end */
+/* ── Skill lines (no bullets) ── */
+h2:last-of-type + p,
+section:last-child p {
+  /* Skill entries */
 }
 
-/* Page break control */
-h2 {
-  page-break-after: avoid;
+/* Empty line gap between entries = p followed by no-ul then p again */
+/* Handled naturally by margin on p:has(strong) */
+
+/* ── Date separator ── */
+.date-sep {
+  font-weight: normal;
+  color: #666;
 }
 
-/* Keep entries together */
+/* ── Contact items ── */
+.contact-item {
+  margin: 0 2pt;
+}
+
+/* ── Keep entries together on page break ── */
+h2 + p + ul,
 p + ul {
   page-break-inside: avoid;
 }
 
-/* Print-specific */
+/* ── Print-specific ── */
 @media print {
-  body { padding: 0; }
-  @page { margin: 15mm 12mm; }
+  body {
+    padding: 0;
+  }
+  @page {
+    margin: 18mm 20mm;
+  }
+}
+
+/* ── Chinese-specific small tweaks ── */
+html:lang(zh-CN) body {
+  font-size: 10pt;
+}
+
+html:lang(zh-CN) h1 {
+  letter-spacing: 2pt;
 }
