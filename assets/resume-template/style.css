@@ -1,0 +1,117 @@
+/* Professional Resume Styles — single-column, clean, fits one page */
+
+/* Reset & base */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: "Helvetica Neue", Arial, "Noto Sans SC", sans-serif;
+  font-size: 10pt;
+  line-height: 1.45;
+  color: #333;
+  max-width: 210mm;
+  margin: 0 auto;
+  padding: 20mm 15mm;
+}
+
+/* Name + title */
+h1 {
+  font-size: 20pt;
+  font-weight: 700;
+  margin-bottom: 2pt;
+}
+
+h1 + p {
+  font-size: 11pt;
+  color: #666;
+  margin-bottom: 4pt;
+}
+
+/* Contact line */
+body > p:first-of-type {
+  font-size: 9pt;
+  color: #888;
+  margin-bottom: 6pt;
+}
+
+/* Separator */
+hr {
+  border: none;
+  border-top: 1.5px solid #333;
+  margin: 6pt 0 8pt 0;
+}
+
+/* Section headers */
+h2 {
+  font-size: 12pt;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1pt;
+  border-bottom: 1px solid #ccc;
+  padding-bottom: 2pt;
+  margin: 10pt 0 4pt 0;
+  page-break-after: avoid;
+}
+
+/* Entry header: Title | Subtitle · Date */
+strong {
+  font-weight: 600;
+}
+
+body > p > strong {
+  /* Skip — contact line */
+}
+
+/* Each entry block */
+h2 + p, h2 + p + p, h2 + p + p + p {
+  /* Entry header lines */
+}
+
+/* Entry header style applied inline */
+p:has(strong) {
+  font-size: 10pt;
+  margin: 4pt 0 1pt 0;
+}
+
+/* Bullet points */
+ul {
+  list-style: none;
+  padding-left: 0;
+  margin: 0 0 3pt 0;
+}
+
+li {
+  position: relative;
+  padding-left: 10pt;
+  margin-bottom: 1pt;
+  font-size: 9pt;
+  line-height: 1.4;
+  color: #444;
+}
+
+li::before {
+  content: "•";
+  position: absolute;
+  left: 0;
+  color: #333;
+}
+
+/* Skill line (no bullets) */
+p:has(+ hr) {
+  /* Last section before end */
+}
+
+/* Page break control */
+h2 {
+  page-break-after: avoid;
+}
+
+/* Keep entries together */
+p + ul {
+  page-break-inside: avoid;
+}
+
+/* Print-specific */
+@media print {
+  body { padding: 0; }
+  @page { margin: 15mm 12mm; }
+}

@@ -1,4 +1,5 @@
-"""Orchestration pipeline: JD parsing → retrieval → Markdown generation → PDF build."""
+"""Orchestration pipeline: JD parsing → retrieval → Markdown generation
+→ LLM refinement → PDF export."""
 
 from __future__ import annotations
 
@@ -13,6 +14,71 @@ from .md_generator import generate_markdown
 from .run_manager import RunManager
 
 
+def _load_deepseek_key() -> str | None:
+    """Load DeepSeek API key from .env or environment."""
+    candidates = [
+        Path(__file__).resolve().parent.parent.parent / ".env",
+        Path.home() / ".env",
+    ]
+    for env_path in candidates:
+        if env_path.exists():
+            for line in env_path.read_text(encoding="utf-8").splitlines():
+                line = line.strip()
+                if line.startswith("VISION_API_KEY="):
+                    return line.split("=", 1)[1].strip().strip("\"'")
+    return None
+
+
+def llm_refine_md(md_text: str, jd_text: str, api_key: str | None = None) -> str:
+    """Use DeepSeek to polish resume bullet points for the target JD.
+
+    Falls back to original text if API unavailable.
+    """
+    key = api_key or _load_deepseek_key()
+    if not key:
+        return md_text
+
+    import httpx
+
+    prompt = (
+        "You are a professional resume writer. Polish the following resume "
+        "to better match the job description. Follow these rules strictly:\n"
+        "1. NEVER fabricate facts, numbers, company names, or skills.\n"
+        "2. Make bullet points more concise and impactful.\n"
+        "3. Prioritize experiences that match the JD keywords.\n"
+        "4. Keep the overall Markdown structure intact (headers, sections).\n"
+        "5. Output ONLY the polished Markdown, no commentary.\n\n"
+        f"=== JOB DESCRIPTION ===\n{jd_text}\n\n"
+        f"=== RESUME ===\n{md_text}"
+    )
+
+    try:
+        response = httpx.post(
+            "https://api.deepseek.com/v1/chat/completions",
+            headers={
+                "Authorization": f"Bearer {key}",
+                "Content-Type": "application/json",
+            },
+            json={
+                "model": "deepseek-chat",
+                "messages": [{"role": "user", "content": prompt}],
+                "stream": False,
+            },
+            timeout=60,
+        )
+        response.raise_for_status()
+        data = response.json()
+        text = ""
+        for choice in data.get("choices", []):
+            if choice.get("message"):
+                text += choice["message"].get("content", "")
+        return text.strip() or md_text
+    except Exception as e:
+        print(f"[resume-tailor] LLM refinement failed: {e}", file=sys.stderr)
+        print("[resume-tailor] Using unrefined draft.", file=sys.stderr)
+        return md_text
+
+
 def run_pipeline(
     jd_text: str,
     job_title: Optional[str] = None,
@@ -22,8 +88,10 @@ def run_pipeline(
     min_score: float = 0.0,
     experiences: Optional[list[dict]] = None,
     run_manager: Optional[RunManager] = None,
+    refine: bool = False,
+    export_pdf: bool = False,
 ) -> str:
-    """Full pipeline: JD text → Markdown resume.
+    """Full pipeline: JD text → (optionally refined) Markdown → (optionally) PDF.
 
     Parameters
     ----------
@@ -43,6 +111,10 @@ def run_pipeline(
         Experience database (auto-loaded if None).
     run_manager : RunManager | None
         Run output directory manager.
+    refine : bool
+        Whether to apply LLM refinement.
+    export_pdf : bool
+        Whether to generate styled PDF after Markdown.
 
     Returns
     -------
@@ -76,12 +148,31 @@ def run_pipeline(
 
     # Step C: Generate Markdown
     md = generate_markdown(jd, results, personal_info=personal_info)
-    md_path = manager.write("draft_resume.md", md)
+
+    # Step D: LLM Refinement (optional)
+    if refine:
+        print("[resume-tailor] Refining with LLM...")
+        md = llm_refine_md(md, jd_text)
+        md_path = manager.write("draft_resume.md", md)
+        print(f"[resume-tailor] Refined resume → {md_path}")
+    else:
+        md_path = manager.write("draft_resume.md", md)
+        print(f"[resume-tailor] Draft resume → {md_path}")
 
     print(f"[resume-tailor] JD analysis → {manager.dir / 'jd_analysis.json'}")
     print(f"[resume-tailor] Selected experiences → {manager.dir / 'selected_experiences.json'}")
-    print(f"[resume-tailor] Draft resume → {md_path}")
-    print(f"[resume-tailor] ── Manual edit {md_path.name}, then run build_pdf to export PDF ──")
+
+    # Step E: PDF Export (optional)
+    if export_pdf:
+        try:
+            from .export_pdf import export_pdf as _export_pdf
+            pdf_path = _export_pdf(md_path)
+            print(f"[resume-tailor] PDF generated → {pdf_path}")
+        except Exception as e:
+            print(f"[resume-tailor] PDF export failed: {e}", file=sys.stderr)
+            print("[resume-tailor] Install weasyprint: pip install weasyprint", file=sys.stderr)
+
+    print(f"[resume-tailor] ── Edit {md_path.name}, then run build_pdf to re-export PDF ──")
 
     return md
 
@@ -100,6 +191,8 @@ def main():
     parser.add_argument("--location", type=str, help="Location")
     parser.add_argument("--min-score", type=float, default=0.0, help="Minimum score threshold")
     parser.add_argument("--output-dir", type=str, help="Output directory (auto-created if omitted)")
+    parser.add_argument("--refine", action="store_true", help="Apply LLM refinement to bullet points")
+    parser.add_argument("--pdf", action="store_true", help="Export styled PDF after generation")
 
     args = parser.parse_args()
 
@@ -147,6 +240,8 @@ def main():
         personal_info=personal_info or None,
         min_score=args.min_score,
         run_manager=manager,
+        refine=args.refine,
+        export_pdf=args.pdf,
     )
 
     print(md)

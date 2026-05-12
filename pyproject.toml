@@ -3,7 +3,7 @@ name = "resume-tailor"
 version = "0.1.0"
 description = "Tailor your resume to match any job description — JD parsing, experience retrieval, Markdown generation, PDF export"
 requires-python = ">=3.10"
-dependencies = []
+dependencies = ["httpx>=0.28"]
 
 [project.scripts]
 resume-tailor = "resume_tailor.pipeline:main"
