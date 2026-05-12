@@ -8,6 +8,10 @@ dependencies = []
 [project.scripts]
 resume-tailor = "resume_tailor.pipeline:main"
 
+[tool.setuptools.packages.find]
+where = ["scripts"]
+include = ["resume_tailor*"]
+
 [project.optional-dependencies]
 dev = [
     "pytest>=8.0",
