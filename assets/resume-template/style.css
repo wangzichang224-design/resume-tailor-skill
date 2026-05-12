@@ -1,10 +1,8 @@
 /* ============================================================
-   Professional Resume Styles — v2.0
-   Single-column, A4-optimized, print-ready
-   Inspired by quality LaTeX resume templates
+   Professional Resume Styles — v3.0
+   Two-column with photo, A4-optimized, print-ready
    ============================================================ */
 
-/* Reset & base */
 *, *::before, *::after {
   margin: 0;
   padding: 0;
@@ -12,142 +10,161 @@
 }
 
 body {
-  font-family: "Helvetica Neue", Arial, "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
+  font-family: "Helvetica Neue", Arial, "PingFang SC", "Microsoft YaHei", sans-serif;
   font-size: 10.5pt;
-  line-height: 1.45;
-  color: #2d2d2d;
+  line-height: 1.5;
+  color: #2c3e50;
   max-width: 210mm;
   margin: 0 auto;
-  padding: 18mm 20mm 15mm 20mm;
   background: #fff;
 }
 
-/* ── Name ── */
-h1 {
-  font-size: 22pt;
-  font-weight: 700;
-  letter-spacing: 0.5pt;
-  color: #1a1a1a;
-  margin-bottom: 2pt;
+.container {
+  display: flex;
+  min-height: 297mm;
 }
 
-/* Title line (right after h1) */
-h1 + p {
-  font-size: 11pt;
-  color: #555;
-  margin-bottom: 3pt;
+/* ── Sidebar (left column) ── */
+.sidebar {
+  width: 35%;
+  background: #1a3a5c;
+  color: #e8edf0;
+  padding: 25mm 6mm 15mm 6mm;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
-/* ── Contact line ── */
-body > p:has(+ hr) {
+.photo-container {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 3px solid #e8edf0;
+  margin-bottom: 10mm;
+}
+
+.photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.sidebar-section {
+  width: 100%;
+  margin-bottom: 6mm;
+  padding: 0 3mm;
+}
+
+.sidebar-section h3 {
   font-size: 9pt;
-  color: #777;
-  margin-bottom: 6pt;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.5pt;
+  color: #8ab4d6;
+  margin-bottom: 3mm;
+  padding-bottom: 1mm;
+  border-bottom: 1px solid #3a6a8a;
 }
 
-/* ── Separator ── */
-hr {
-  border: none;
-  border-top: 1.5px solid #333;
-  margin: 5pt 0 7pt 0;
+.contact-item {
+  font-size: 8.5pt;
+  color: #c8d4dc;
+  margin-bottom: 1.5mm;
+  line-height: 1.4;
 }
 
-/* ── Section headers ── */
-h2 {
-  font-size: 11.5pt;
+/* Skill tags in sidebar */
+.sidebar .skill-tag {
+  display: inline-block;
+  font-size: 8pt;
+  color: #c8d4dc;
+  margin: 1mm 1mm 0 0;
+  padding: 1mm 2mm;
+  border: 1px solid #3a6a8a;
+  border-radius: 2px;
+}
+
+/* ── Main content (right column) ── */
+.main-content {
+  width: 65%;
+  padding: 22mm 8mm 15mm 8mm;
+}
+
+.header {
+  margin-bottom: 5mm;
+  padding-bottom: 2mm;
+  border-bottom: 2px solid #1a3a5c;
+}
+
+.header h1 {
+  font-size: 20pt;
   font-weight: 700;
   color: #1a3a5c;
-  border-bottom: 1px solid #d0d8e0;
-  padding-bottom: 2pt;
-  margin: 9pt 0 3pt 0;
-  page-break-after: avoid;
-  text-transform: uppercase;
+  letter-spacing: 2pt;
+  margin-bottom: 1mm;
+}
+
+.header .title {
+  font-size: 10pt;
+  color: #5a7a8a;
   letter-spacing: 1pt;
 }
 
-/* ── Entry header: **Title | Subtitle** · Date ── */
-p:has(strong), p > strong {
-  font-size: 10.5pt;
+.main-content h2 {
+  font-size: 10pt;
+  font-weight: 700;
+  color: #1a3a5c;
+  margin: 4mm 0 2mm 0;
+  padding-left: 0;
+  border-bottom: 1px solid #d0d8e0;
+  padding-bottom: 1mm;
+  page-break-after: avoid;
+}
+
+/* Entry header: **Title | Subtitle** · Date */
+.main-content p:has(strong) {
+  font-size: 9.5pt;
   font-weight: 600;
   color: #1a1a1a;
-}
-
-p:has(strong) {
-  margin: 4pt 0 1pt 0;
+  margin: 2.5mm 0 0.5mm 0;
   line-height: 1.4;
 }
 
-/* Date portion within entry header (after ·) */
-p:has(strong) {
-  font-size: 10pt;
-}
-
-/* ── Bullet points ── */
-ul {
+/* Bullets */
+.main-content ul {
   list-style: none;
   padding-left: 0;
-  margin: 0 0 2.5pt 0;
+  margin: 0 0 1.5mm 0;
 }
 
-li {
+.main-content li {
   position: relative;
-  padding-left: 11pt;
-  margin-bottom: 1.2pt;
-  font-size: 9.5pt;
-  line-height: 1.4;
-  color: #3a3a3a;
+  padding-left: 4mm;
+  margin-bottom: 0.8mm;
+  font-size: 9pt;
+  line-height: 1.45;
+  color: #3a4a5a;
   text-align: justify;
 }
 
-li::before {
+.main-content li::before {
   content: "•";
   position: absolute;
-  left: 0;
+  left: 1mm;
   color: #1a3a5c;
   font-weight: 700;
 }
 
-/* ── Skill lines (no bullets) ── */
-h2:last-of-type + p,
-section:last-child p {
-  /* Skill entries */
-}
-
-/* Empty line gap between entries = p followed by no-ul then p again */
-/* Handled naturally by margin on p:has(strong) */
-
-/* ── Date separator ── */
-.date-sep {
-  font-weight: normal;
-  color: #666;
-}
-
-/* ── Contact items ── */
-.contact-item {
-  margin: 0 2pt;
-}
-
-/* ── Keep entries together on page break ── */
-h2 + p + ul,
-p + ul {
+/* Keep entries together */
+.main-content h2 + p + ul,
+.main-content p + ul {
   page-break-inside: avoid;
 }
 
-/* ── Print-specific ── */
+/* ── Print ── */
 @media print {
-  body {
-    padding: 0;
-  }
-  @page {
-    margin: 18mm 20mm;
-  }
-}
-
-/* ── Chinese-specific small tweaks ── */
-html:lang(zh-CN) body {
-  font-size: 10pt;
-}
-
-html:lang(zh-CN) h1 {
-  letter-spacing: 2pt;
+  body { padding: 0; }
+  @page { margin: 0; }
 }

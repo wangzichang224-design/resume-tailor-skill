@@ -1,14 +1,37 @@
 <!DOCTYPE html>
-<html lang="{{LANG}}">
+<html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>{{TITLE}}</title>
+<title>简历</title>
 <style>
 {{CSS}}
 </style>
 </head>
 <body>
-{{CONTENT}}
+<div class="container">
+  <div class="sidebar">
+    <div class="photo-container">
+      <img src="{{PHOTO}}" alt="照片" class="photo">
+    </div>
+    <div class="sidebar-section">
+      <h3>联系方式</h3>
+      <div class="contact-item">{{PHONE}}</div>
+      <div class="contact-item">{{EMAIL}}</div>
+      <div class="contact-item">{{LOCATION}}</div>
+    </div>
+    <div class="sidebar-section">
+      <h3>专业技能</h3>
+      {{SKILLS}}
+    </div>
+  </div>
+  <div class="main-content">
+    <div class="header">
+      <h1>{{NAME}}</h1>
+      <div class="title">{{TITLE}}</div>
+    </div>
+    {{CONTENT}}
+  </div>
+</div>
 </body>
 </html>

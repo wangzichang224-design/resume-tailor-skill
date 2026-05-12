@@ -45,11 +45,17 @@ Templates are located at:
 - Primary: `~/.claude/skills/resume-review/assets/resume-template/style.css` and `template.html`
 - For additional templates (optional): `~/.claude/skills/resume-review/templates/`
 
+**Default template:** `assets/resume-template/` — 双栏带照片布局（左侧深蓝底+照片+联系方式+技能，右侧正文）。照片路径来自 `data/my_experiences.local.json` 中的 `personal_info.photo` 字段。如果用户资料库中没有照片，使用 `assets/photo.png` 作为默认照片。
+
+**Other templates (optional):**
+- `templates/zh/standard/` — 中文标准单栏布局
+- `templates/industry/ats/` — 英文ATS单栏布局
+
 **Template selection logic:**
-- Chinese JD + Chinese title → `templates/zh/standard/` (or fallback to generic)
+- Default: use `assets/resume-template/` (带照片双栏模板)
+- Chinese JD → `templates/zh/standard/` (or fallback to generic)
 - English JD → `templates/industry/ats/` (or fallback to generic)
-- Research/academic focus → `templates/research/ats/`
-- User can also specify: "用英文模板", "用学术简历模板"
+- User can specify: "用英文模板" or keep default
 
 If the specific template directory doesn't exist, use the generic `assets/resume-template/`.
 
@@ -101,6 +107,13 @@ Read `template.html` and `style.css` from the template directory.
 
 In `template.html`, substitute:
 - `{{CSS}}` → the full content of `style.css`
+- `{{PHOTO}}` → photo file path (from `data/my_experiences.local.json` → `personal_info.photo`, or default `assets/photo.png`)
+- `{{NAME}}` → user's name
+- `{{TITLE}}` → job title from JD analysis
+- `{{PHONE}}` → user's phone number
+- `{{EMAIL}}` → user's email
+- `{{LOCATION}}` → user's location
+- `{{SKILLS}}` → skill tags as HTML (`<span class="skill-tag">Python</span>`)
 - `{{CONTENT}}` → the HTML body generated in Step 3
 
 ## Step 5. Export PDF
