@@ -49,13 +49,20 @@ The JSON should be an array of experience objects following the schema in `schem
 | `metrics` | Quantitative metrics (`verified` boolean for bonus) | No |
 | `highlights` | Suggested bullet phrasings | No |
 
-## Step 3. Confirm Information
+## Step 3. Confirm Information (Only When Necessary)
 
-Before writing, go through the recorded experiences and **flag any ambiguity** to the user:
+**Rule: If the information is already in the experience database, use it directly — do NOT ask.**
 
-- "你的 GPA 是 3.66/4 — 这个数字来自你的数据库，需要我直接使用吗？"
-- "这个项目的时间写的是 2025.12，是开始时间吗？"
-- "需要我在简历中省略联系方式中的手机号吗？"
+This includes:
+- Phone number (if present in any experience entry's fields)
+- Email address (if present)
+- Location
+- Dates, titles, subtitles
+- Metrics, numbers, evidence
+
+**Only ask when information is genuinely missing or ambiguous:**
+- "你的简历库里没有手机号，方便提供吗？"
+- "这个项目只写了开始时间，结束时间是什么时候？"
 
 **Do not fabricate.** If info is missing, ask. If the user says "just use what's there", proceed.
 

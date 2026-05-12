@@ -158,3 +158,29 @@ contact info
 
 **Contact info:**
 - Join phone, email, location with ` | ` (pipe with spaces).
+
+### Anti-AI-Trace Writing Rules (CRITICAL)
+
+These rules exist because AI-generated resume bullets are immediately recognizable. Follow them strictly to produce natural, human-readable content.
+
+#### ❌ NEVER do these (classic AI traces):
+
+| Don't | Why it's an AI trace |
+|-------|---------------------|
+| "深度参与xxx" | 每个 AI 简历都在"深度参与" |
+| "聚焦xxx" / "致力于xxx" | 空洞的总结，没人这么写简历 |
+| "xxx，验证了xxx方法论" | 应届生简历不会写这种话 |
+| "输出xxx报告，为xxx提供核心支撑" | 太模板化 |
+| "覆盖xxx全链路" / "完成xxx闭环" | AI 常用词，真人不用 |
+| "实践A/B测试优化xxx" | 没细节的 A/B 测试描述是经典 AI 痕迹 |
+| bullet 末尾加"（Metric: xxx）"公式化括号 | AI 特有的结构化痕迹 |
+| 专业技能写成"AI产品能力 · LLM应用设计" | 分类太 AI，真人写"Python、SQL、Excel" |
+| 任何读起来像岗位 JD 的 bullet | 简历 bullet 应该像人说的，不是 HR 写的 |
+
+#### ✅ DO write like a real person:
+
+- **用短句**：一事一行，不要硬凑成三行
+- **用具体数字**："5万条数据"比"海量数据"好，"30万字"比"大量内容"好
+- **第一人称省略**：直接写"做了xx"，不用"本人""负责"
+- **词汇朴素**："做了""搞了""写了""跑了"比"实施""落地""赋能"好
+- **适度留白**：不是每个 bullet 都需要"背景-行动-结果"三段式，一段话说清楚一件事就行

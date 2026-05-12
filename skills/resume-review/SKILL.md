@@ -21,6 +21,24 @@ Read templates from the skill assets directory.
 Write into `<workspace>/work/`: `claim-source-map.md`
 Write into `<workspace>/output/`: `resume.html`, `resume.pdf`
 
+## Review Rules
+
+### Claim-Source-Map Rule
+- Every bullet in the draft must be traceable to a source in `experiences.json`.
+- If a bullet cannot be traced, flag it as `⚠ No source` — do not silently approve.
+
+### Anti-AI-Trace Review
+When reviewing the draft, check specifically for these AI traces and flag them for correction:
+
+- [ ] "深度参与"、"聚焦"、"致力于"、"赋能"、"闭环"、"方法论"、"抓手"、"落地" 等空洞词汇
+- [ ] 专业技能写成"AI产品能力 · LLM应用设计"这类分类式写法（应改为"Python、SQL、Excel"）
+- [ ] Bullet 末尾有公式化的（Metric: value）括号
+- [ ] 每个 bullet 都硬套"背景-行动-结果"三段式，没有省略
+- [ ] 任何读起来像 JD 描述的句子
+- [ ] 过于正式的措辞（真人简历用词更随意）
+
+If any of these are found, go back to resume-drafting for corrections before proceeding.
+
 ## Template Resolution
 
 Templates are located at:
